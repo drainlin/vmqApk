@@ -10,3 +10,4 @@
 *.jks
 /app/authkey.jks
 
+/key.properties

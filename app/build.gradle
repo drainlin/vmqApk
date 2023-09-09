@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdkVersion 26
@@ -17,21 +20,20 @@ android {
         InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream();
         properties.load(inputStream)
 
-        signConfig {
-            storeFile file(properties.getProperty("STORE_FILE_NAME"))//签名文件路径，
-            storePassword properties.getProperty("KEY_PASSWORD") //密码
-            keyAlias properties.getProperty("STORE_ALIAS")
-            keyPassword properties.getProperty("KEY_PASSWORD")  //密码
+        signingConfigs {
+            release {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.signConfig // 配置debug包的签名,接入微信分享必须验证签名
-        }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.signConfig
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.release
         }
     }
 }
